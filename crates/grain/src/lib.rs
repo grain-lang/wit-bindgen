@@ -165,21 +165,22 @@ impl WorldGenerator for Grain {
                     _ => false,
                 })
                 .collect();
-
-            gen.src.push_str("\nprovide module ");
-            gen.src.push_str(
-                &resolve.types[**resource]
-                    .name
-                    .as_ref()
-                    .unwrap()
-                    .to_upper_camel_case(),
-            );
-            gen.src.push_str(" {");
-            for (_name, func) in resource_funcs.iter() {
-                gen.src.push_str("\n");
-                gen.import(resolve, func);
+            if resource_funcs.len() > 0 {
+                gen.src.push_str("\nprovide module ");
+                gen.src.push_str(
+                    &resolve.types[**resource]
+                        .name
+                        .as_ref()
+                        .unwrap()
+                        .to_upper_camel_case(),
+                );
+                gen.src.push_str(" {");
+                for (_name, func) in resource_funcs.iter() {
+                    gen.src.push_str("\n");
+                    gen.import(resolve, func);
+                }
+                gen.src.push_str("}\n");
             }
-            gen.src.push_str("}\n");
         }
         gen.src.push_str("}\n\n");
         gen.finish();
@@ -2490,12 +2491,12 @@ impl Bindgen for FunctionBindgen<'_, '_> {
                 self.push_str(&format!("let mut {} = []\n", result));
                 self.push_str(&format!("Memory.incRef(WasmI32.fromGrain({}))\n", result));
 
-                self.push_str("for (let mut i = WasmI32.(-)(");
+                self.push_str("for (let mut i = ");
                 self.push_str(&len);
-                self.push_str(", 1n); WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {\n");
+                self.push_str("; WasmI32.gtU(i, 0n); i = WasmI32.(-)(i, 1n)) {\n");
                 self.push_str("let base = WasmI32.(+)(");
                 self.push_str(&base);
-                self.push_str(", WasmI32.(*)(i, ");
+                self.push_str(", WasmI32.(*)(WasmI32.(-)(i, 1n), ");
                 self.push_str(&size.to_string());
                 self.push_str("n))\n");
                 self.push_str(&body);
