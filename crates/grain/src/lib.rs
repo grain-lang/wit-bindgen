@@ -561,7 +561,7 @@ impl GrainInterfaceGenerator<'_> {
             .map(|param| wasm_type(*param))
             .collect();
         self.push_str(&params.join(", "));
-        self.push_str(") -> ");
+        self.push_str(") => ");
         match wasm_sig.results.len() {
             0 => self.push_str("Void"),
             1 => {
@@ -796,10 +796,10 @@ impl<'a> InterfaceGenerator<'a> for GrainInterfaceGenerator<'a> {
             self.src.push_str(&format!(
                 r#"
 @externalName("[resource-new]{name}")
-foreign wasm new{name_upper}: WasmI32 -> WasmI32 from "[export]{module}"
+foreign wasm new{name_upper}: WasmI32 => WasmI32 from "[export]{module}"
 
 @externalName("[resource-rep]{name}")
-foreign wasm rep{name_upper}: WasmI32 -> WasmI32 from "[export]{module}"
+foreign wasm rep{name_upper}: WasmI32 => WasmI32 from "[export]{module}"
 
 @unsafe
 let new{name_upper} = (rep) => {{
@@ -1289,7 +1289,7 @@ pub trait GrainGenerator {
                 self.push_str(", ");
             }
         }
-        self.push_str(") -> ");
+        self.push_str(") => ");
         self.print_results(resolve, func);
         self.push_str(" = (");
         for (i, (name, _)) in func.params.iter().enumerate() {
