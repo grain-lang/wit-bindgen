@@ -165,21 +165,22 @@ impl WorldGenerator for Grain {
                     _ => false,
                 })
                 .collect();
-
-            gen.src.push_str("\nprovide module ");
-            gen.src.push_str(
-                &resolve.types[**resource]
-                    .name
-                    .as_ref()
-                    .unwrap()
-                    .to_upper_camel_case(),
-            );
-            gen.src.push_str(" {");
-            for (_name, func) in resource_funcs.iter() {
-                gen.src.push_str("\n");
-                gen.import(resolve, func);
+            if resource_funcs.len() > 0 {
+                gen.src.push_str("\nprovide module ");
+                gen.src.push_str(
+                    &resolve.types[**resource]
+                        .name
+                        .as_ref()
+                        .unwrap()
+                        .to_upper_camel_case(),
+                );
+                gen.src.push_str(" {");
+                for (_name, func) in resource_funcs.iter() {
+                    gen.src.push_str("\n");
+                    gen.import(resolve, func);
+                }
+                gen.src.push_str("}\n");
             }
-            gen.src.push_str("}\n");
         }
         gen.src.push_str("}\n\n");
         gen.finish();
