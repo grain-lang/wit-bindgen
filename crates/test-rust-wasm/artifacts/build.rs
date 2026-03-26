@@ -13,14 +13,14 @@ fn main() {
     let mut cmd = Command::new("cargo");
     cmd.arg("build")
         .current_dir("../../test-rust-wasm")
-        .arg("--target=wasm32-wasi")
+        .arg("--target=wasm32-wasip1")
         .env("CARGO_TARGET_DIR", &out_dir)
         .env("CARGO_PROFILE_DEV_DEBUG", "1");
     let status = cmd.status().unwrap();
     assert!(status.success());
 
     let mut wasms = Vec::new();
-    for file in out_dir.join("wasm32-wasi/debug").read_dir().unwrap() {
+    for file in out_dir.join("wasm32-wasip1/debug").read_dir().unwrap() {
         let file = file.unwrap().path();
         if file.extension().and_then(|s| s.to_str()) != Some("wasm") {
             continue;
